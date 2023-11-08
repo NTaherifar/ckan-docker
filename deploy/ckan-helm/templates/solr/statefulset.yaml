@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "ckan-helm.solr.fullname" . }}
+  labels:
+    {{- include "ckan-helm.labels" . | nindent 4 }}
+spec:
+  serviceName: "{{ include "ckan-helm.solr.fullname" . }}"
+  replicas: {{ .Values.solr.replicaCount | default 1 }}
+  selector:
+    matchLabels:
+      app: {{ include "ckan-helm.solr.fullname" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "ckan-helm.solr.fullname" . }}
+    spec:
+      containers:
+      - name: solr
+        image: "{{ .Values.solr.image.repository }}:{{ .Values.solr.image.tag }}"
+        resources:
+          {{- toYaml .Values.solr.resources | nindent 10 }}
+        livenessProbe:
+          {{- toYaml .Values.solr.livenessProbe | nindent 10 }}
+        readinessProbe:
+          {{- toYaml .Values.solr.readinessProbe | nindent 10 }}
+        ports:
+        - name: solr
+          containerPort: {{ .Values.solr.service.port }}
+        volumeMounts:
+        - name: solr-data
+          mountPath: /var/solr
+        envFrom:
+          - configMapRef:
+              name: {{ .Release.Name }}-config
+  volumeClaimTemplates:
+  - metadata:
+      name: solr-data
+    spec:
+      accessModes:
+      - "ReadWriteOnce"
+      resources:
+        requests:
+          storage: {{ .Values.solr.persistence.size }}
+      storageClassName: {{ .Values.solr.persistence.storageClass | quote }}

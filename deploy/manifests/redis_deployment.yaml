@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: redis
-        image: redis:latest  # Use the appropriate image for Redis
+        image: redis:6 # latest
         resources:
           requests:
             memory: "256Mi" # Adjust the memory request as needed

@@ -16,7 +16,6 @@ spec:
       containers:
       - name: datapusher
         image: ckan/ckan-base-datapusher:0.0.20 # ckan/datapusher:latest
-        imagePullPolicy: IfNotPresent
         resources:
           requests:
             memory: "256Mi" # Adjust the memory request as needed

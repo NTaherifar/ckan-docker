@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-config
+  labels:
+    app: {{ template "ckan-helm.name" . }}
+    chart: {{ template "ckan-helm.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  {{- range $key, $value := .Values.globalEnv }}
+  {{ $key }}: {{ $value | quote }}
+  {{- end }}
+  CKAN_PORT_HOST: "{{ .Values.ckan.service.port }}"
+  CKAN_PORT: "{{ .Values.ckan.service.port }}"
+  SOLR_PORT: "{{ .Values.solr.service.port }}"
+  CKAN_SOLR_URL: http://solr:{{ .Values.solr.service.port }}/solr/ckan
+  TEST_CKAN_SOLR_URL: http://solr:{{ .Values.solr.service.port }}/solr/ckan
+  CKAN_REDIS_URL: redis://redis:{{ .Values.redis.service.port }}/1
+  TEST_CKAN_REDIS_URL: redis://redis:{{ .Values.redis.service.port }}/1
+  CKAN_DATAPUSHER_URL: http://datapusher:{{ .Values.datapusher.service.port }}
+  CKAN__DATAPUSHER__CALLBACK_URL_BASE: http://ckan:{{ .Values.ckan.service.port }}
+  DATAPUSHER_REWRITE_URL: http://ckan:{{ .Values.ckan.service.port }}
+
+  CKAN_SQLALCHEMY_URL: postgresql://{{ .Values.globalEnv.CKAN_DB_USER }}:{{ .Values.globalEnv.CKAN_DB_PASSWORD }}@{{ .Values.globalEnv.POSTGRES_HOST }}/{{ .Values.globalEnv.CKAN_DB }}
+  CKAN_DATASTORE_WRITE_URL: postgresql://{{ .Values.globalEnv.CKAN_DB_USER }}:{{ .Values.globalEnv.CKAN_DB_PASSWORD }}@{{ .Values.globalEnv.POSTGRES_HOST }}/{{ .Values.globalEnv.DATASTORE_DB }}
+  CKAN_DATASTORE_READ_URL: postgresql://{{ .Values.globalEnv.DATASTORE_READONLY_USER }}:{{ .Values.globalEnv.DATASTORE_READONLY_PASSWORD }}@{{ .Values.globalEnv.POSTGRES_HOST }}/{{ .Values.globalEnv.DATASTORE_DB }}
+
+  # TEST_CKAN_SQLALCHEMY_URL: postgres://ckan:ckan@db/ckan_test
+  # TEST_CKAN_DATASTORE_WRITE_URL: postgresql://ckan:ckan@db/datastore_test
+  # TEST_CKAN_DATASTORE_READ_URL: postgresql://datastore_ro:datastore@db/datastore_test

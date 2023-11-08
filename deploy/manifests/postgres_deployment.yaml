@@ -16,8 +16,7 @@ spec:
     spec:
       containers:
       - name: postgres
-        image: ckan-docker-db:latest # ckan/ckan:2.10.1
-        imagePullPolicy: IfNotPresent  # This is key for local images
+        image: benmotevalli/ckan-postgres # ckan-docker-db:latest
         resources:
           requests:
             memory: "256Mi" # Adjust the memory request as needed
